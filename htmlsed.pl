@@ -2,7 +2,7 @@
 # Small script for converting bad written html
 # author: Maik Glatki
 # example usage:
-# find . -iname '*.html' | perl ~/sed.pl
+# find . -iname '*.html' | perl ~/htmlsed.pl
 
 use Tie::File;
 
