@@ -19,6 +19,7 @@ while(<>)
   foreach (@array)
   {
     s/Plone Default/PloneDefault/g;
+    s/Plone%20Default/PloneDefault/g;
     s/ü/&uuml;/g;
     s/Ü/&Uuml;/g;
     s/Ä/&Auml;/g;
@@ -29,6 +30,7 @@ while(<>)
     s/á/&aacute;/g;
     s/Á/&Aacute;/g;
     s/€/&euro;/g;
+    s/”/&#34;/g;
   }
   untie @array;  
 }
