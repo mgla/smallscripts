@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Small script for converting bad written html
+# Small script for converting badly written html
 # author: Maik Glatki
 # example usage:
 # find . -iname '*.html' | perl ~/htmlsed.pl
@@ -31,6 +31,8 @@ while(<>)
     s/Á/&Aacute;/g;
     s/€/&euro;/g;
     s/”/&#34;/g;
+    s/…/.../g;
+	
   }
   untie @array;  
 }
