@@ -20,6 +20,12 @@ foreach my $file (@ARGV)
 	unless ( -e $newfile)
 	{
 		move($file,$newfile);
+		print "renamed \"$file\" to \"$newfile\".\n";
+	} else
+	{
+		
+		print "warning: did not rename \"$file\". \"$newfile\" already exists.\n";
 	}
+
 }
 
