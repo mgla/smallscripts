@@ -1,0 +1,4 @@
+#/bin/sh
+RHOST=$1
+PORT=$2
+ssh -L $PORT:localhost:$PORT $RHOST
