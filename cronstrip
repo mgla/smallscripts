@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+# Makes filenames cron-compatible. Damn you, Paul Vixie.
+
+use strict;
+use warnings;
+use File::Copy;
+
+foreach my $file (@ARGV)
+{
+	unless (-e $file)
+	{
+		die ("File \"".$file."\" does not exist. Abort.\n");
+	}
+}
+# again
+foreach my $file (@ARGV)
+{
+	my $newfile = $file;
+	$newfile =~ s/[\W_]/_/g;
+	unless ( -e $newfile)
+	{
+		move($file,$newfile);
+	}
+}
+
