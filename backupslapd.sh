@@ -1,4 +1,6 @@
 #!/bin/sh
+# Ugly script to backup a slapd ldap database.
+
 FILE=ldap.diff
 if [ ! -e $FILE ]; then
 	echo "creating backup as $FILE"

@@ -1,4 +1,5 @@
 #/bin/sh
+# simple script to tunnel a port via ssh
 RHOST=$1
 PORT=$2
 ssh -L $PORT:localhost:$PORT $RHOST
