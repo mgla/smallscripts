@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+# Lists all crontabs for all users.
+# Author: Maik Glatki <maik.glatki@gmail.com>, 2015
+
+use strict;
+use warnings;
+
+# Core modules
+use User::pwent;
+use Term::ANSIColor;
+
+my @users = ();
+while ( my $entryref = getpwent() ) {
+    my $user = @{$entryref}[0];
+    my $cmd = "crontab -u $user -l 2> /dev/null";
+    my $res = qx( $cmd );
+    if ( $res ) {
+        print colored ["bold"], "Crontab for user $user:\n";
+        print $res;
+    }
+}
+
