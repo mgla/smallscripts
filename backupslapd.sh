@@ -1,5 +1,6 @@
 #!/bin/sh
 # Ugly script to backup a slapd ldap database.
+# Author: Maik Glatki <maik.glatki@gmail.com>, 2014
 set -u
 
 FILE=ldap.diff

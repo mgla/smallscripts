@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 # Makes filenames cron-compatible. Damn you, Paul Vixie.
+# Author: Maik Glatki <maik.glatki@gmail.com>, 2014
 
 use strict;
 use warnings;

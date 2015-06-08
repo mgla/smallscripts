@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 # Small script I "found" in some apache logfiles. Useful for fritzbox remote "managing".
+# Author: Maik Glatki <maik.glatki@gmail.com>, 2014
 
 use strict;
 use warnings;

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Small script for converting badly written html
-# author: Maik Glatki
+# Author: Maik Glatki <maik.glatki@gmail.com>, 2014
 # example usage:
 # find . -iname '*.html' | perl ~/htmlsed.pl
 
