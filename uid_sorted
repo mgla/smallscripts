@@ -1,5 +1,6 @@
 #!/bin/sh
-# Author: Maik Glatki
 # List UIDs on system, sorted. Useful for ldap/pam, etc.
+# This program needs the getent program, which you may typically find in libc
+# Author: Maik Glatki <maik.glatki@gmail.com>
 
 getent passwd | perl -e 'while (<>){@a = split(/:/); printf "%05d\n",$a[2];}' | sort
