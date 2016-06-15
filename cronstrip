@@ -1,32 +1,32 @@
 #!/usr/bin/perl
-# Makes filenames cron-compatible. Damn you, Paul Vixie.
-# Author: Maik Glatki <maik.glatki@gmail.com>, 2014
+# Makes filenames cron-compatible. Paul Vixie's cron expects crontab file names
+# in a very specific format, which new users often do not know of.
+# Files in a wrong format will be silently ignored.
+# Author: Maik Glatki <maik.glatki@gmail.com>, 2014-2016
 
 use strict;
 use warnings;
+
+# Core modules
 use File::Copy;
 
-foreach my $file (@ARGV)
-{
-	unless (-e $file)
-	{
-		die ("File \"".$file."\" does not exist. Abort.\n");
-	}
+# Check parameters
+for my $file (@ARGV) {
+    if (! -e $file) {
+        die("File \"".$file."\" does not exist. Abort.\n");
+    }
 }
-# again
-foreach my $file (@ARGV)
-{
-	my $newfile = $file;
-	$newfile =~ s/[\W_]/_/g;
-	unless ( -e $newfile)
-	{
-		move($file,$newfile);
-		print "renamed \"$file\" to \"$newfile\".\n";
-	} else
-	{
-		
-		print "warning: did not rename \"$file\". \"$newfile\" already exists.\n";
-	}
 
+# Move if target file does not exist already.
+for my $file (@ARGV) {
+    my $newfile = $file;
+    $newfile =~ s/[\W_]/_/g;
+    # This also catches correct filenames.
+    unless ( -e $newfile) {
+        move($file,$newfile);
+        print "renamed \"$file\" to \"$newfile\".\n";
+    } else {
+        print "warning: did not rename \"$file\". \"$newfile\" already exists.\n";
+    }
 }
 
