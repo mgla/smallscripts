@@ -24,6 +24,9 @@ Something I saw in a request in a webserver log files. Allows for remote root ac
 
 ## htmlsed
 ## memorybloat
+
+Script to allocate a specific amount of memory. Useful to check if ulimits are actually working. Can definitely kill other processes, use with caution. Allocates 75 MB of memory by default. Change in source code.
+
 ## sshforward
 ## uid_sorted
 
