@@ -9,11 +9,14 @@ use warnings;
 # Core modules
 require Getopt::Long;
 require Tie::File;
+require Pod::Usage;
 
 # Extra modules
 require Net::DNS;
 
-sub printHelp();
+sub printHelp() {
+    Pod::Usage::pod2usage(1);
+}
 
 my $infile = '';
 my $Aquery = '';
@@ -90,6 +93,30 @@ for my $host (@lines) {
     }
 }
 
-sub printHelp() {
-    print "Help\n";
-}
+__END__
+
+=head1 NAME
+
+Compares DNS entries on domains with a given set.
+
+=head1 SYNOPSIS
+
+dnsbulkcompare -i FILE QUERIES
+ Options:
+    -A               A entry query
+    -CNAME           CNAME entry query
+    -MX              MX entry query
+   --help            brief help message
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-help>
+
+Print a brief help message and exits.
+
+
+=back
+
+=cut
