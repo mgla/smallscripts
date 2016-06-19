@@ -1,13 +1,17 @@
 #!/usr/bin/perl
-# Small script to compare dns query results to string.
-# Author: Maik Glatki <maik.glatki@gmail.com>, 2014
+# Compares DNS query results to string.
+# Author: Maik Glatki <maik.glatki@gmail.com>, 2014-201-20166
+# Requires Net::DNS.
 
 use strict;
 use warnings;
 
-use Getopt::Long;
-use Net::DNS;
-use Tie::File;
+# Core modules
+require Getopt::Long;
+require Tie::File;
+
+# Extra modules
+require Net::DNS;
 
 sub printHelp();
 
@@ -16,69 +20,69 @@ my $Aquery = '';
 my $CNAMEquery = '';
 my $MXquery = '';
 
-GetOptions( "i=s" => \$infile,
-     "A=s"        => \$Aquery,
-     "CNAME=s"    => \$CNAMEquery,
-     "MX=s"       => \$MXquery
+Getopt::Long::GetOptions(
+    "i=s"       => \$infile,
+    "A=s"       => \$Aquery,
+    "CNAME=s"   => \$CNAMEquery,
+    "MX=s"      => \$MXquery
 );
 
 # Read file
-if ( $infile eq '' ) {
+if ($infile eq '') {
     print STDERR "Please specify input file with -i parameter.\n";
     printHelp();
     exit 1;
 }
-if ( ! -f $infile ) {
+if (! -f $infile) {
     print STDERR "Not a valid file: $infile.\n";
     printHelp();
     exit 2;
 }
 tie my @lines, 'Tie::File', $infile or die "Could not open file $infile: $!";
 
-# check query params
+# Check query params
 my $paramcount = 0;
 our $mode = '';
 our $query = '';
-if ( $Aquery ne '' ) { $paramcount++; $mode="A"; $query = $Aquery; }
-if ( $CNAMEquery ne '' ) { $paramcount++; $mode = "CNAME"; $query = $CNAMEquery;}
-if ( $MXquery ne '' ) { $paramcount++; $mode="MX"; $query = $MXquery; }
+if ($Aquery ne '')     { $paramcount++; $mode="A";       $query = $Aquery; }
+if ($CNAMEquery ne '') { $paramcount++; $mode = "CNAME"; $query = $CNAMEquery;}
+if ($MXquery ne '')    { $paramcount++; $mode="MX";      $query = $MXquery; }
 
-if ( $paramcount == 0 ) { 
+if ($paramcount == 0) { 
     print STDERR "No query parameter given.\n";
     printHelp();
     exit 3;
 }
-if ( $paramcount > 1 ) { 
+if ($paramcount > 1) { 
     print STDERR "To many query parameters given.\n";
     printHelp();
     exit 3;
 }
 
-# check dns records
+# Check dns records
 my $res = Net::DNS::Resolver->new;
 print "Querying hosts: for $mode = $query\n";
-foreach my $host ( @lines  ) {
+for my $host (@lines) {
     my $reply = $res->search($host);
-    if ( $reply ) {
+    if ($reply) {
         my $entryset = 0;
-        foreach my $rr ( $reply->answer ) {
-            if ( $rr->type eq $mode ) {
+        for my $rr ($reply->answer) {
+            if ($rr->type eq $mode) {
                 $entryset = 1;
 
-                # get result
+                # Get result and compare
                 my $res;
-                if ( $mode eq 'CNAME' ) {
+                if ($mode eq 'CNAME') {
                     $res = $rr->cname;
-                } elsif ( $mode  eq 'A' ) {
+                } elsif ( $mode  eq 'A') {
                     $res = $rr->address;
                 }
-                # compare result
-                if ( $res ne $query ) {
+                if ($res ne $query) {
                     print "$host: $mode mismatch: $res.\n";
                 }
             }
         }
-        if ( $entryset == 0 ) {
+        if ($entryset == 0) {
             print "$host: no $mode entry!\n";
         }
     } else {
