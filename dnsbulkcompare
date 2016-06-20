@@ -54,7 +54,7 @@ for my $key (qw(A CNAME MX)) {
 if (($num_params == 0) || ($num_params > 1)) {
     print STDERR "Wrong number of parameters given ($num_params). See help.\n";
     printHelp();
-    exit 3;
+    exit 1;
 }
 my $query = $queries->{$mode};
 
@@ -117,5 +117,11 @@ Compares DNS entries on domains with a given set.
   Other options:
    --help            Print this help message
    --verbose         Extra debug output.
+
+  The exit code can be used to interprete the result as follows:
+    0: All entries match
+    1: Parameters are invalid
+    2: Input file does not exist
+    4: At least one entry mismatches
 
 =cut
