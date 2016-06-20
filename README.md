@@ -18,7 +18,7 @@ Usage:
 ## crontablist
 ## debian_remove_unused_kernels
 ## dnsbulkcompare
-## fritzbox.remote.manager
+## fritsh
 
 Something I saw in a request in a webserver log files. Allows for remote root access on some FRITZ!Box versions.
 
