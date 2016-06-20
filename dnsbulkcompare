@@ -101,22 +101,14 @@ Compares DNS entries on domains with a given set.
 
 =head1 SYNOPSIS
 
-dnsbulkcompare -i FILE QUERIES
- Options:
+  Usage: dnsbulkcompare -i FILE QUERIES
+
+  QUERIES must be exactly one of the folowing options:
     -A               A entry query
     -CNAME           CNAME entry query
     -MX              MX entry query
+
+  Other options:
    --help            brief help message
-
-=head1 OPTIONS
-
-=over 4
-
-=item B<-help>
-
-Print a brief help message and exits.
-
-
-=back
 
 =cut
