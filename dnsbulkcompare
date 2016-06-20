@@ -19,15 +19,16 @@ sub printHelp() {
 }
 
 my $infile = '';
-my $Aquery = '';
-my $CNAMEquery = '';
-my $MXquery = '';
+my $queries = {};
+my $verbose = 0;
 
 Getopt::Long::GetOptions(
     "i=s"       => \$infile,
-    "A=s"       => \$Aquery,
-    "CNAME=s"   => \$CNAMEquery,
-    "MX=s"      => \$MXquery
+    "A=s"       => \$queries->{A},
+    "CNAME=s"   => \$queries->{CNAME},
+    "MX=s"      => \$queries->{MX},
+    # Extra
+    "verbose"   => \$verbose,
 );
 
 # Read file
@@ -43,28 +44,26 @@ if (! -f $infile) {
 }
 tie my @lines, 'Tie::File', $infile or die "Could not open file $infile: $!";
 
-# Check query params
-my $paramcount = 0;
-our $mode = '';
-our $query = '';
-if ($Aquery ne '')     { $paramcount++; $mode="A";       $query = $Aquery; }
-if ($CNAMEquery ne '') { $paramcount++; $mode = "CNAME"; $query = $CNAMEquery;}
-if ($MXquery ne '')    { $paramcount++; $mode="MX";      $query = $MXquery; }
+# Validate parameters.
+my $num_params = 0;
+my $mode = '';
+for my $key (qw(A CNAME MX)) {
+    if ($queries->{$key}) { $num_params++; $mode = $key; }
+}
 
-if ($paramcount == 0) { 
-    print STDERR "No query parameter given.\n";
+if (($num_params == 0) || ($num_params > 1)) {
+    print STDERR "Wrong number of parameters given ($num_params). See help.\n";
     printHelp();
     exit 3;
 }
-if ($paramcount > 1) { 
-    print STDERR "To many query parameters given.\n";
-    printHelp();
-    exit 3;
-}
+my $query = $queries->{$mode};
 
 # Check dns records
 my $res = Net::DNS::Resolver->new;
-print "Querying hosts: for $mode = $query\n";
+if ($verbose) {
+    print "Querying hosts: for $mode = $query\n";
+}
+my $exitcode = 0;
 for my $host (@lines) {
     my $reply = $res->search($host);
     if ($reply) {
@@ -80,18 +79,25 @@ for my $host (@lines) {
                 } elsif ( $mode  eq 'A') {
                     $res = $rr->address;
                 }
+                if ($verbose) {
+                    print "Result: $res\n";
+                }
                 if ($res ne $query) {
-                    print "$host: $mode mismatch: $res.\n";
+                    print "MISMATCH $host: $mode entry: $res.\n";
+                    $exitcode = 4;
                 }
             }
         }
         if ($entryset == 0) {
-            print "$host: no $mode entry!\n";
+            print "MISMATCH: $host: no $mode entry!\n";
+            $exitcode = 4;
         }
     } else {
-        print STDERR "No reply for $host\n";
+        print "No reply for $host\n";
+        $exitcode = 4;
     }
 }
+exit $exitcode;
 
 __END__
 
@@ -109,6 +115,7 @@ Compares DNS entries on domains with a given set.
     -MX              MX entry query
 
   Other options:
-   --help            brief help message
+   --help            Print this help message
+   --verbose         Extra debug output.
 
 =cut
