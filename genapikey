@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+# Prints a base16 token, useful for generating API keys.
+# Default length is 16. but can be customized with -n option.
+#
+# Contact: Maik Glatki <maik.glatki@gmail.com>
+
+use strict;
+use warnings;
+
+# Core modules
+require Getopt::Long;
+require Pod::Usage;
+
+my $cfg = {
+    size => 16,
+    help => 0,
+};
+
+Getopt::Long::GetOptions(
+    'size=i' => \$cfg->{size},
+    'help'   => \$cfg->{help},
+);
+
+if ($cfg->{help}) {
+    Pod::Usage::pod2usage(1);
+}
+
+# Read random bytes from /dev/urandom
+my $rsize = sprintf('%i', ($cfg->{size} + 1) / 2);
+open(my $rh, "<", "/dev/urandom");
+read($rh, my $rd, $rsize);
+print substr((unpack "H*", $rd), 0 , $cfg->{size});
+close($rh);
+
+__END__
+
+=head1 NAME
+
+Compares DNS entries on domains with a given set.
+
+=head1 SYNOPSIS
+
+  Usage: genapikey [OPTIONS]
+
+  QUERIES must be exactly one of the folowing options:
+    -s --size        Size of key to generate.
+
+  Other options:
+   --help            Print this help message
+
+=cut

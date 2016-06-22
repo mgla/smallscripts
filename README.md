@@ -30,6 +30,10 @@ See --help for specifics..
 Something I saw in a request in a webserver log files.
 Allows for remote root access on some FRITZ!Box versions.
 
+## genapikey
+
+Tool to generate base16 api keys.
+
 ## htmlsed
 ## memorybloat
 
