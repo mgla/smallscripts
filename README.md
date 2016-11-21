@@ -10,6 +10,10 @@ Small script that simply calls `slapcat -o ldif-wrap=no -l ldap.diff`.
 I do not remember why i scripted that, but there it is. I am not proud of this.
 I will keep it as a reminder.
 
+## cacti-downloader
+
+Downloader for retrieving cacti graphs by id and timestamp.
+
 ## cronstrip
 
 Makes filenames cron-compatible.

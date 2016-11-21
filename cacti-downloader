@@ -1,0 +1,99 @@
+#!/usr/bin/perl
+# Download nagios graphs by pattern, id and time
+
+use strict;
+use warnings;
+
+# Core modules
+require File::Spec;
+require Getopt::Long;
+require Pod::Usage;
+
+# Constants
+use constant {
+    URLPATTERN => '%BASEURL%/graph_image.php?action=zoom&local_graph_id=%GRAPH_ID%&rra_id=1&view_type=&graph_start=%TIME_FROM%&graph_end=%TIME_TO%&graph_height=120&graph_width=500&title_font_size=10'
+};
+
+# Extra modules
+require JSON;
+
+my $configfn;
+my $outdir;
+my $help;
+
+if (!Getopt::Long::GetOptions(
+    "c|config=s" => \$configfn,
+    "o|out=s"    => \$outdir,
+    "h|help"     => \$help,
+)) {
+    print("Error in command line arguments\n");
+    Pod::Usage::pod2usage(1);
+    exit 1;
+}
+
+if ($help) {
+    Pod::Usage::pod2usage(1);
+    exit;
+}
+
+for my $check (($configfn, $outdir)) {
+    if (! $check) {
+        print("Mandatory parameters not defined!\n");
+        Pod::Usage::pod2usage(1);
+        exit 1;
+    }
+}
+
+if (! -d $outdir ) {
+    print("$outdir is not a file!\n");
+    exit 2;
+}
+
+# Slurp config file
+my $config;
+{
+    undef $/;
+    open(my $fh, '<', $configfn) or die "Could not open config file $configfn: $!";
+    my $json_text = <$fh>;
+    $config = JSON::decode_json($json_text);
+    close($fh);
+}
+
+for my $id (@{$config->{graph_ids}}){
+    # Generate URL
+    my $url = URLPATTERN;
+    $url =~ s/%BASEURL%/$config->{base_url}/;
+    $url =~ s/%GRAPH_ID%/$id/;
+    $url =~ s/%TIME_FROM%/$config->{time_from}/;
+    $url =~ s/%TIME_TO%/$config->{time_to}/;
+    # Try to download file
+    system('wget', '-q', $url, '-O', File::Spec->catfile($outdir, "$id.png"));
+}
+
+exit 0;
+
+__END__
+
+=head1 NAME
+
+Compares DNS entries on domains with a given set.
+
+=head1 SYNOPSIS
+
+  Usage: cacti-downloader [OPTIONS]
+
+  OPTIONS must contain either  exactly both of the following options:
+    -c --config        The config file.
+    -o --out           The output folder to use.
+
+  Other options:
+   --help            Print this help message
+
+  Example config file:
+  {
+    "base_url": "http://youcacti/cacti",
+    "graph_ids": [1234, 1235, 1111],
+    "time_from": 1476057600,
+    "time_to": 1477267200
+  }
+=cut
