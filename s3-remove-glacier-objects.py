@@ -23,6 +23,8 @@ client = boto3.Session(botocore_session=session).client('s3')
 
 objects_left = True
 next_token = ''
+iterated = 0
+deleted = 0
 while objects_left:
     if next_token is '':
         res = client.list_objects_v2(
@@ -39,14 +41,19 @@ while objects_left:
         )
 
     glacier_keys = [{'Key': obj['Key']}  for obj in res['Contents'] if obj['StorageClass'] == 'GLACIER']
+    iterated += len(res['Contents'])
+    deleted += len(glacier_keys)
     if len(glacier_keys) > 0:
         client.delete_objects(
             Bucket=s3_bucket,
             Delete={'Objects': glacier_keys}
         )
-        print("Deleted:\n\t %s" % "\n\t".join(map(lambda x: x['Key'], glacier_keys)))
+# FIXME add this as debug        print("Deleted:\n\t %s" % "\n\t".join(map(lambda x: x['Key'], glacier_keys)))
 
     if res['IsTruncated']:
         next_token = res['NextContinuationToken']
     else:
         objects_left = False
+#    print('.', end='', flush=True)
+    sys.stdout.write("\r Iterated %s files, deleted %s files" % (iterated, deleted))
+    sys.stdout.flush()
